@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 @dataclass
-class CodeFilel:
+class CodeFile:
     file_path:str
     relative_path: str
     content: str
