@@ -1,0 +1,6 @@
+streamlit
+groq
+anthropic
+tree-sitter-python
+gitpython
+python-dotenv
