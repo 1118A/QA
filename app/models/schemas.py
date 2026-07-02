@@ -12,7 +12,7 @@ class CodeFile:
 @dataclass
 class CodeChunk:
     chunk_id:str
-    fill_path:str
+    file_path:str
     relative_path:str
     content:str
     start_line:int

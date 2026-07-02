@@ -25,4 +25,5 @@ CHROMA_COLLECTION_NAME = "codebase_qa"
 
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
-TOP_K = 8
+TOP_K = 4
+MAX_CHUNK_CHARS = 2500

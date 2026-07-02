@@ -1,6 +1,6 @@
 from groq import Groq
 
-from app.config import GROQ_API_KEY, GROQ_MODEL
+from app.config import GROQ_API_KEY, GROQ_MODEL, MAX_CHUNK_CHARS
 
 
 class QAEngine:
@@ -8,25 +8,25 @@ class QAEngine:
         self.client = Groq(api_key=GROQ_API_KEY)
 
     def build_context(self, retrieved_chunks: list[dict]) -> str:
-        """
-        Convert retrieved chunks into a prompt context.
-        """
-
         context = []
 
-        for index, chunk in enumerate(retrieved_chunks, start=1):
-
+        for index, chunk in enumerate(retrieved_chunks[:4], start=1):
             metadata = chunk["metadata"]
 
+            content = chunk["content"]
+
+            if len(content) > MAX_CHUNK_CHARS:
+                content = content[:MAX_CHUNK_CHARS] + "\n\n...code truncated..."
+
             context.append(
-                f"""
+            f"""
 ========== Source {index} ==========
 File: {metadata['relative_path']}
 Lines: {metadata['start_line']} - {metadata['end_line']}
 Symbol: {metadata['symbol_name']}
 Type: {metadata['symbol_type']}
 
-{chunk['content']}
+{content}
 """
             )
 
