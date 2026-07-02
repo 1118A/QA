@@ -9,7 +9,7 @@ DATA_DIR = BASE_DIR / "data"
 REPOS_DIR = DATA_DIR / "repos"
 CHROMA_DIR = DATA_DIR / "chroma"
 
-Groq_Key = os.getenv("Groq_Key")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 EMBEDDING_MODEL_NAME = "BAAI/bge-small-en-v1.5"
 

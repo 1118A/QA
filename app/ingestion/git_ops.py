@@ -6,10 +6,18 @@ from app.config import REPOS_DIR
 
 
 def get_repo_name(repo_url: str) -> str:
+    repo_url = repo_url.strip()
+
+    if not repo_url:
+        raise ValueError("Repository URL is empty.")
+
     name = repo_url.rstrip("/").split("/")[-1]
 
     if name.endswith(".git"):
         name = name[:-4]
+
+    if not name:
+        raise ValueError("Could not detect repository name from URL.")
 
     return name
 
@@ -21,9 +29,12 @@ def clone_or_update_repo(repo_url: str) -> Path:
     repo_path = REPOS_DIR / repo_name
 
     if repo_path.exists():
-        repo = Repo(repo_path)
-        repo.remotes.origin.pull()
-        return repo_path
+        if (repo_path / ".git").exists():
+            repo = Repo(repo_path)
+            repo.remotes.origin.pull()
+            return repo_path
+
+        shutil.rmtree(repo_path)
 
     Repo.clone_from(repo_url, repo_path)
     return repo_path
