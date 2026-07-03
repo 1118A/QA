@@ -14,11 +14,17 @@ class CodebaseQAPipeline:
 
         retrieved = retrieve_relevant_chunks(question)
 
+        if not retrieved:
+            return {
+            "answer": "I couldn't find anything relevant in the indexed repository.",
+            "sources": []
+        }
+
         reranked = rerank_results(retrieved)
 
         answer = qa_engine.answer(
-            question=question,
-            retrieved_chunks=reranked,
+        question=question,
+        retrieved_chunks=reranked,
         )
 
         return {

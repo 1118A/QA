@@ -11,7 +11,16 @@ def retrieve_relevant_chunks(
 
     results = vector_store.search(
         query_embedding=query_embedding,
-        top_k=top_k,
+        top_k=5,
     )
 
+    print("=" * 80)
+    print("Retrieved Results")
+    print("=" * 80)
+
+    for r in results:
+        print(r["score"], r["metadata"]["relative_path"])
+
     return results
+
+    #return filtered
