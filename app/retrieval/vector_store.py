@@ -1,15 +1,22 @@
 import chromadb
 
-from app.config import CHROMA_DIR, CHROMA_COLLECTION_NAME
+from app.config import (
+    CHROMA_API_KEY,
+    CHROMA_TENANT,
+    CHROMA_DATABASE,
+    CHROMA_COLLECTION_NAME,
+    MAX_DOCUMENT_CHARS,
+    UPSERT_BATCH_SIZE,
+)
 from app.models.schemas import CodeChunk
 
 
 class VectorStore:
     def __init__(self):
-        CHROMA_DIR.mkdir(parents=True, exist_ok=True)
-
-        self.client = chromadb.PersistentClient(
-            path=str(CHROMA_DIR)
+        self.client = chromadb.CloudClient(
+            api_key=CHROMA_API_KEY,
+            tenant=CHROMA_TENANT,
+            database=CHROMA_DATABASE,
         )
 
         self.collection = self.client.get_or_create_collection(
@@ -22,19 +29,19 @@ class VectorStore:
         chunks: list[CodeChunk],
         embeddings: list[list[float]],
     ) -> None:
-        if not chunks:
-            return
-
-        if not embeddings:
+        if not chunks or not embeddings:
             return
 
         ids = []
         documents = []
         metadatas = []
+        filtered_embeddings = []
 
-        for chunk in chunks:
+        for chunk, embedding in zip(chunks, embeddings):
             ids.append(chunk.chunk_id)
-            documents.append(chunk.content)
+            documents.append(chunk.content[:MAX_DOCUMENT_CHARS])
+            filtered_embeddings.append(embedding)
+
             metadatas.append({
                 "file_path": chunk.file_path,
                 "relative_path": chunk.relative_path,
@@ -45,17 +52,18 @@ class VectorStore:
                 "language": chunk.language,
             })
 
-        self.collection.upsert(
-            ids=ids,
-            documents=documents,
-            embeddings=embeddings,
-            metadatas=metadatas,
-        )
+        for i in range(0, len(ids), UPSERT_BATCH_SIZE):
+            self.collection.upsert(
+                ids=ids[i:i + UPSERT_BATCH_SIZE],
+                documents=documents[i:i + UPSERT_BATCH_SIZE],
+                embeddings=filtered_embeddings[i:i + UPSERT_BATCH_SIZE],
+                metadatas=metadatas[i:i + UPSERT_BATCH_SIZE],
+            )
 
     def search(
         self,
         query_embedding: list[float],
-        top_k: int = 8,
+        top_k: int = 4,
     ) -> list[dict]:
         results = self.collection.query(
             query_embeddings=[query_embedding],

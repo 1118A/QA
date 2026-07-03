@@ -1,12 +1,56 @@
-# Python-generated files
+# Python
 __pycache__/
-*.py[oc]
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+.venv/
+venv/
+env/
+
+# Environment Variables
+.env
+
+# VS Code
+.vscode/
+
+# JetBrains
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Python Build
 build/
 dist/
-wheels/
-*.egg-info
+*.egg-info/
 
-# Virtual environments
-.venv
+# Pytest
+.pytest_cache/
 
-.env
+# Jupyter
+.ipynb_checkpoints/
+
+# Chroma Local Database
+chroma/
+chroma_db/
+data/chroma/
+*.sqlite3
+*.sqlite
+*.db
+
+# Downloaded GitHub Repositories
+data/repos/
+
+# Cache
+.cache/
+cache/
+
+# Hugging Face Cache
+hf_cache/
+.huggingface/

@@ -41,7 +41,7 @@ Type: {chunk.symbol_type}
 Language: {chunk.language}
 
 Code:
-{chunk.content}
+{chunk.content[:2500]}
 """
         texts.append(text)
 
